@@ -53,7 +53,8 @@ end
 post '/_github' do
   data = fetch_data(request)
   logger.info data.to_s
-  repos.map do |clone_url, output_dir|
+  repos.map do |clone_url, rel_output_dir|
+    output_dir = File.join("repos", rel_output_dir)
     clone(clone_url, output_dir)
     commit_url = data.fetch('head_commit').fetch('url')
     make_new_commit(output_dir, commit_url)
