@@ -7,6 +7,7 @@ require 'open3'
 logger  = Logger.new("log/production.log")
 $stdout = $stderr = File.open("log/production.log", "a")
 repos   = YAML.load_file("config/repos.yml")
+processes = []
 
 def fetch_data(request)
   request.body.rewind
@@ -34,7 +35,7 @@ end
 
 def make_new_commit(output_dir, commit_url)
   # commit and push
-  Dir.chdir(destination) do
+  Dir.chdir(output_dir) do
     exec(
       "git",
       "commit",
@@ -53,10 +54,13 @@ end
 post '/_github' do
   data = fetch_data(request)
   logger.info data.to_s
-  repos.map do |clone_url, rel_output_dir|
-    output_dir = File.join("repos", rel_output_dir)
-    clone(clone_url, output_dir)
-    commit_url = data.fetch('head_commit').fetch('url')
-    make_new_commit(output_dir, commit_url)
+  processes << Process.fork do
+    repos.map do |clone_url, rel_output_dir|
+      output_dir = File.join("repos", rel_output_dir)
+      clone(clone_url, output_dir)
+      commit_url = data.fetch('head_commit').fetch('url')
+      make_new_commit(output_dir, commit_url)
+    end
   end
+  JSON.dump("building" => data.fetch('head_commit'))
 end
