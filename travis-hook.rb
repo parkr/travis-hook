@@ -23,12 +23,14 @@ end
 
 def verify_signature(request)
   sent_signature = request.env['HTTP_X_HUB_SIGNATURE']
+  logger.info "Verifying #{sent_signature} is a valid signature..."
   payload_body = request_body(request)
   unless secrets.any? { |sig|
     Rack::Utils.secure_compare(encoded_signature(sig, payload_body), sent_signature)
   }
     return halt 401, "Secret is invalid."
   end
+  logger.info "Verified!"
 end
 
 get '/' do
