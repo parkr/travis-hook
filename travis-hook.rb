@@ -1,13 +1,22 @@
-require 'sinatra'
-require 'logger'
 require 'json'
-require 'yaml'
+require 'logger'
 require 'open3'
+require 'sidekiq'
+require 'sinatra'
+require 'yaml'
 
 logger  = Logger.new("log/production.log")
 $stdout = $stderr = File.open("log/production.log", "a")
 repos   = YAML.load_file("config/repos.yml")
-processes = []
+
+class HookWorker
+  include Sidekiq::Worker
+
+  def perform(clone_url, output_dir, commit_url)
+    clone(clone_url, output_dir)
+    make_new_commit(output_dir, commit_url)
+  end
+end
 
 def fetch_data(request)
   request.body.rewind
@@ -54,13 +63,11 @@ end
 post '/_github' do
   data = fetch_data(request)
   logger.info data.to_s
-  processes << Process.fork do
-    repos.map do |clone_url, rel_output_dir|
-      output_dir = File.join("repos", rel_output_dir)
-      clone(clone_url, output_dir)
-      commit_url = data.fetch('head_commit').fetch('url')
-      make_new_commit(output_dir, commit_url)
-    end
+  repos.map do |clone_url, rel_output_dir|
+    output_dir = File.join("repos", rel_output_dir)
+    commit_url = data.fetch('head_commit').fetch('url')
+    logger.info "Launching a sidekiq job for #{commit_url}..."
+    HookWorker.perform_async clone_url, output_dir, commit_url
   end
   JSON.dump("building" => data.fetch('head_commit'))
 end
