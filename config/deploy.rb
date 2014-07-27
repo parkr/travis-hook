@@ -23,7 +23,7 @@ set :repo_url, 'git://github.com/parkr/travis-hook.git'
 set :pty, true
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/secrets.yml}
+set :linked_files, %w{config/secrets.yml config/repos.yml}
 
 # Default value for linked_dirs is []
 set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
