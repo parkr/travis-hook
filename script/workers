@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -x
+
+bundle exec sidekiq -r workers -C config/sidekiq.yml

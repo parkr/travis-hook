@@ -2,8 +2,6 @@ require 'logger'
 require 'open3'
 require 'sinatra'
 
-logger = Logger.new("log/production.log")
-
 class HookWorker
   include Sidekiq::Worker
 
