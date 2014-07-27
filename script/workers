@@ -2,4 +2,4 @@
 
 set -x
 
-bundle exec sidekiq -r workers -C config/sidekiq.yml
+bundle exec sidekiq -r ./workers/hook.rb -C config/sidekiq.yml
