@@ -1,6 +1,6 @@
 require 'logger'
 require 'open3'
-require 'sinatra'
+require 'sidekiq'
 
 class HookWorker
   include Sidekiq::Worker

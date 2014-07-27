@@ -20,7 +20,7 @@ set :repo_url, 'git://github.com/parkr/travis-hook.git'
 # set :log_level, :debug
 
 # Default value for :pty is false
-set :pty, true
+# set :pty, true
 
 # Default value for :linked_files is []
 set :linked_files, %w{config/secrets.yml config/repos.yml config/sidekiq.yml}
@@ -33,6 +33,11 @@ set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
+
+# Sidekiq Configurations
+set :sidekiq_config,  File.join(shared_path, 'config', 'sidekiq.yml')
+set :sidekiq_queue,   :travis_hook
+set :sidekiq_require, File.join(current_path, 'workers', 'hook.rb')
 
 namespace :deploy do
 
