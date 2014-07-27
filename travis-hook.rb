@@ -5,9 +5,9 @@ require 'sidekiq'
 require 'sinatra'
 require 'yaml'
 
-logger  = Logger.new("log/production.log")
-$stdout = $stderr = File.open("log/production.log", "a")
-repos   = YAML.load_file("config/repos.yml")
+repos    = YAML.load_file("config/repos.yml")
+log_file = "log/production.log"
+logger   = Logger.new(log_file)
 
 class HookWorker
   include Sidekiq::Worker
@@ -54,10 +54,6 @@ end
 def fetch_data(request)
   request.body.rewind
   JSON.parse request.body.read
-end
-
-before do
-  content_type :json
 end
 
 get '/' do
