@@ -4,6 +4,7 @@ require 'sinatra'
 
 class HookWorker
   include Sidekiq::Worker
+  sidekiq_options :queue => :travis_hook
 
   def exec(*cmd)
     logger.info "CWD=#{Dir.pwd} : Executing '#{cmd.join(" ")}'..."
