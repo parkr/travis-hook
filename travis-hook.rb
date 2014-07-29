@@ -44,6 +44,9 @@ post '/_github' do
   data = fetch_data(request)
   logger.info data.to_s
   verify_signature(request, secrets)
+  unless data.fetch("ref").eql? "refs/heads/master"
+    return JSON.dump("skipping" => data)
+  end
   repos.map do |clone_url, rel_output_dir|
     output_dir = File.join("repos", rel_output_dir)
     commit_url = data.fetch('head_commit').fetch('url')
