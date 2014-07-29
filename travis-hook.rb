@@ -45,6 +45,7 @@ post '/_github' do
   logger.info data.to_s
   verify_signature(request, secrets)
   unless data.fetch("ref").eql? "refs/heads/master"
+    logger.info "Skipping the build for #{data.fetch('head_commit')}"
     return JSON.dump("skipping" => data)
   end
   repos.map do |clone_url, rel_output_dir|
