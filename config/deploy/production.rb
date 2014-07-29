@@ -4,10 +4,9 @@
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-role :app, ENV['DEPLOY_SERVER']
-role :web, ENV['DEPLOY_SERVER']
-role :db,  ENV['DEPLOY_SERVER']
-
+role :app, ENV.fetch('DEPLOY_SERVER')
+role :web, ENV.fetch('DEPLOY_SERVER')
+role :db,  ENV.fetch('DEPLOY_SERVER')
 
 # Extended Server Syntax
 # ======================
