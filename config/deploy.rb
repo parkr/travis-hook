@@ -17,7 +17,7 @@ set :repo_url, 'git://github.com/parkr/travis-hook.git'
 # set :format, :pretty
 
 # Default value for :log_level is :debug
-# set :log_level, :debug
+set :log_level, ENV.fetch('LOG_LEVEL', 'debug').to_sym
 
 # Default value for :pty is false
 # set :pty, true
