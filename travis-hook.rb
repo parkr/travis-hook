@@ -48,6 +48,10 @@ post '/_github' do
     logger.info "Skipping the build for #{data.fetch('head_commit')}"
     return JSON.dump("skipping" => data)
   end
+  if data.fetch("commits").any? {|c| c.fetch("message").include? "[ci skip]"}
+    logger.info "[ci skip]-ing the build for #{data.fetch('head_commit')}"
+    return JSON.dump("ci-skipping" => data)
+  end
   repos.map do |clone_url, rel_output_dir|
     output_dir = File.join("repos", rel_output_dir)
     commit_url = data.fetch('head_commit').fetch('url')
